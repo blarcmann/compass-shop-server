@@ -1,6 +1,14 @@
 const router = require('express').Router();
+const cloudinary = require('cloudinary').v2;
 const Product = require('../models/Product');
+const User = require('../models/User');
 const verifyToken = require('../middlewares/verify-token');
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET
+});
 
 router.get('/products', (req, res) => {
   let skip = 0;
@@ -32,4 +40,70 @@ router.get('/products', (req, res) => {
         products
       })
     })
-})
+});
+
+router.get('/product/:id', (req, res) => {
+  Product.findById({ _id: req.params.id })
+    .populate('owner')
+    .exec((err, product) => {
+      if (err) {
+        res.json({
+          success: false,
+          message: 'Product not found'
+        });
+      } else {
+        res.json({
+          success: true,
+          product: product,
+        });
+      }
+    });
+});
+
+router.post('/add_product', verifyToken, (req, res) => {
+  User.findById({ _id: req.body.userId })
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'user not found, dummy!'
+        })
+      }
+      if (req.files.product_image) {
+        const file = req.files.product_image;
+        cloudinary.uploader.upload(file.tempFilePath, (error, result) => {
+          if (error) {
+            console.log('error occured while uploading', error);
+            return res.status(501).json({
+              success: false,
+              message: 'error occured while uploading to cloudinary'
+            })
+          }
+          let img_url = result.url;
+          let product = new Product({
+            name: req.body.name,
+            category: req.body.category,
+            description: req.body.description,
+            price: req.body.price,
+            product_image: img_url
+          });
+          product.save();
+          return res.status(201).json({
+            success: true
+          });
+        })
+      } else {
+        let product = new Producr({
+          name: req.body.name,
+          category: req.body.category,
+          description: req.body.description,
+          price: req.body.price,
+          product_image: ''
+        })
+        product.save();
+        res.status(201).json({
+          success: true,
+        });
+      }
+    })
+});

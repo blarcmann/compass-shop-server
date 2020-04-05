@@ -2,7 +2,7 @@ var createError = require('http-errors');
 var express = require('express');
 // var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var cors = require('cors');
+const fileUpload = require('express-fileupload');
 require('dotenv').config();
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -26,7 +26,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
+app.use(fileUpload({ useTempFiles: true }));
 
 // var usersRouter = require('./routes/users');
 // var indexRouter = require('./routes/index');
