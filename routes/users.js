@@ -3,10 +3,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
-router.get('/', (res) => {
-  console.log('called');
-  res.send('users route works fine');
-})
 
 router.post('/signup', (req, res) => {
   User.findOne({ email: req.body.email })
@@ -18,13 +14,16 @@ router.post('/signup', (req, res) => {
         })
       } else {
         const newUser = new User({
-          name: req.body.name,
+          username: req.body.username,
           password: req.body.password,
           email: req.body.email,
         })
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(newUser.password, salt, (error, hash) => {
-            if (error) throw error;
+        bcrypt.genSalt(10, (error, salt) => {
+          bcrypt.hash(newUser.password, salt)
+          bcrypt.hash(newUser.password, salt, (err, hash) => {
+            if (err) {
+              console.log(err);
+            }
             newUser.password = hash;
             newUser.save()
               .then(user => {
@@ -68,7 +67,8 @@ router.post('/login', (req, res) => {
               var token = jwt.sign({ user: user }, process.env.SECRET_KEY, { expiresIn: '7d' });
               res.status(200).json({
                 success: true,
-                token: token
+                token,
+                user,
               })
             }
           })

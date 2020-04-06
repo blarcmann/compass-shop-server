@@ -5,7 +5,6 @@ var mongoose = require('mongoose');
 const fileUpload = require('express-fileupload');
 require('dotenv').config();
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
 
 var app = express();
 
@@ -24,7 +23,6 @@ mongoose.set('useCreateIndex', true);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger('dev'));
-app.use(cookieParser());
 app.use(fileUpload({ useTempFiles: true }));
 
 
