@@ -8,7 +8,7 @@ var logger = require('morgan');
 
 var app = express();
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true }, function (err) {
+mongoose.connect(process.env.MONGOLAB_PURPLE, { useNewUrlParser: true, useUnifiedTopology: true }, function (err) {
   if (err) {
     console.log(err);
   } else {
