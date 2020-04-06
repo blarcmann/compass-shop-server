@@ -8,6 +8,6 @@ const productSchema = new Schema({
   name: String,
   description: String,
   price: Number,
-})
+}, { timestamps: true })
 
 module.exports = mongoose.model('Product', productSchema);

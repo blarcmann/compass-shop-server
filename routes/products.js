@@ -10,7 +10,11 @@ cloudinary.config({
   api_secret: process.env.API_SECRET
 });
 
-router.get('/products', (req, res) => {
+router.get('/test', (res) => {
+  console.log('called');
+})
+
+router.get('/all', (req, res) => {
   let skip = 0;
   let limit = 10;
   let query = {};
@@ -42,7 +46,7 @@ router.get('/products', (req, res) => {
     })
 });
 
-router.get('/product/:id', (req, res) => {
+router.get('/:id', (req, res) => {
   Product.findById({ _id: req.params.id })
     .populate('owner')
     .exec((err, product) => {
@@ -61,7 +65,7 @@ router.get('/product/:id', (req, res) => {
 });
 
 router.post('/add_product', verifyToken, (req, res) => {
-  User.findById({ _id: req.body.userId })
+  User.findById({ _id: req.decoded.user._id })
     .then(user => {
       if (!user) {
         return res.status(404).json({
@@ -107,3 +111,5 @@ router.post('/add_product', verifyToken, (req, res) => {
       }
     })
 });
+
+module.exports = router;
